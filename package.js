@@ -7,6 +7,7 @@ Package.describe({
 
 Package.onUse(function (api) {
   api.versionsFrom('1.0.1');
+  api.use('http');
   api.addFiles('disease-ontology.js');
   api.export('Diseases');
 });
