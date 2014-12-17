@@ -8,6 +8,7 @@ Package.describe({
 Package.onUse(function (api) {
   api.versionsFrom('1.0.1');
   api.use('http');
+  api.use('wizonesolutions:underscore-string@1.0.0')
   api.addFiles('disease-ontology.js');
   api.export('Diseases');
 });

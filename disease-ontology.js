@@ -35,11 +35,66 @@ if (Meteor.isServer) {
         }
       }
     },
+
+    getOBO: function(){
+      HTTP.get('http://purl.obolibrary.org/obo/doid.obo', function(err, response){
+        console.log(err);
+        if (response.content){
+          var stanzas = response.content.split("\n\n");
+          var headerData = stanzas[0].split("\n");
+          console.log(headerData);
+          var ontologyInfo = {};
+          for (var h in headerData) {
+            rowSplit = headerData[h].split(":");
+            // console.log(rowSplit);
+            //anything before the first colon will be the line type
+            var key = rowSplit[0];
+            //re-join the remainder of the line, replacing removed colons
+            var value = _.clean(rowSplit.slice(1).join(":"));
+            //discarding subsetdefs for now, since each disease won't need them
+            if (key.toLowerCase() != 'subsetdef') {
+              ontologyInfo[key] = value
+            };
+          }
+          // console.log(ontologyInfo);
+          for (var s in stanzas.slice(1)){
+            var stanza = stanzas[s];
+            var stanzaParts = stanza.split("\n");
+            var stanzaType = stanzaParts[0].replace(/[\[\]]+/g,'').toLowerCase();
+            if (stanzaType == 'term'){
+              var term = {ontology: ontologyInfo};
+              termData = stanzaParts.slice(1);
+              for (var t in termData) {
+                rowSplit = termData[t].split(":");
+                //anything before the first colon will be the line type
+                var key = rowSplit[0];
+                //re-join the remainder of the line, replacing removed colons
+                var value = _.clean(rowSplit.slice(1).join(":"));
+                // console.log(key, value);
+                if (key in term) {
+                  if (Array.isArray(term[key])) {
+                    term[key].push(value);
+                  } else {
+                    term[key] = [term[key], value];
+                  }
+                } else {
+                  term[key] = value;
+                }
+              }
+              console.log(term);
+              Diseases.upsert({
+                'id': term['id']
+              }, term);
+            }
+          }
+        }
+      });
+    }
   });
 
   Meteor.startup(function () {
     console.log(Meteor.settings);
-    console.log('BioPortal API Key: ' + Meteor.settings.bioportal.apiKey);
+    //console.log('BioPortal API Key: ' + Meteor.settings.bioportal.apiKey);
     console.log(Diseases.find().count() + ' diseases in database');
   });
 }

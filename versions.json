@@ -15,6 +15,10 @@
     [
       "url",
       "1.0.2"
+    ],
+    [
+      "wizonesolutions:underscore-string",
+      "1.0.0"
     ]
   ],
   "pluginDependencies": [],
