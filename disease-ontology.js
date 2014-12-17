@@ -49,10 +49,21 @@ if (Meteor.isServer) {
             // console.log(rowSplit);
             //anything before the first colon will be the line type
             var key = rowSplit[0];
-            //re-join the remainder of the line, replacing removed colons
-            var value = _.clean(rowSplit.slice(1).join(":"));
             //discarding subsetdefs for now, since each disease won't need them
             if (key.toLowerCase() != 'subsetdef') {
+              if (key == 'date') {
+                var dateArray = rowSplit.slice(1);
+                var year = dateArray[2].split(' ')[0];
+                // subtract one to get a javascript-style month
+                var month = dateArray[1] - 1;
+                var day = dateArray[0];
+                var hour = dateArray[2].split(' ')[1];
+                var minute = dateArray[3];
+                var value = new Date(year, month, day, hour, minute);
+              } else {
+                //re-join the remainder of the line, replacing removed colons
+                var value = _.clean(rowSplit.slice(1).join(":"));
+              }
               ontologyInfo[key] = value
             };
           }
@@ -81,7 +92,7 @@ if (Meteor.isServer) {
                   term[key] = value;
                 }
               }
-              console.log(term);
+              // console.log(term);
               Diseases.upsert({
                 'id': term['id']
               }, term);
