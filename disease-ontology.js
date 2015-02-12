@@ -1,6 +1,14 @@
 Diseases = new Meteor.Collection('diseases');
 
 if (Meteor.isServer) {
+  // Add access points for `GET`, `POST`, `PUT`, `DELETE`
+  HTTP.publish({
+    collection: Diseases
+  }, function (data) {
+    // this.userId, this.query, this.params
+    return Diseases.find({});
+  });
+
   Meteor.methods({
     updateAllDiseases: function () {
       var result = HTTP.get(Meteor.settings.bioportal.startUrl, {
@@ -106,6 +114,10 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
     console.log(Meteor.settings);
     //console.log('BioPortal API Key: ' + Meteor.settings.bioportal.apiKey);
-    console.log(Diseases.find().count() + ' diseases in database');
+    var diseaseCount = Diseases.find().count();
+    console.log(diseaseCount + ' diseases in database');
+    if (diseaseCount == 0) {
+      var importDiseases = Meteor.call('getOBO');
+    }
   });
 }
