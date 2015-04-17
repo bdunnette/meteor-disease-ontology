@@ -2,48 +2,14 @@ Diseases = new Meteor.Collection('diseases');
 
 if (Meteor.isServer) {
   // Add access points for `GET`, `POST`, `PUT`, `DELETE`
-  HTTP.publish({
-    collection: Diseases
-  }, function (data) {
-    // this.userId, this.query, this.params
-    return Diseases.find({});
-  });
+  // HTTP.publish({
+  //   collection: Diseases
+  // }, function (data) {
+  //   // this.userId, this.query, this.params
+  //   return Diseases.find({});
+  // });
 
   Meteor.methods({
-    updateAllDiseases: function () {
-      var result = HTTP.get(Meteor.settings.bioportal.startUrl, {
-        params: {
-          apikey: Meteor.settings.bioportal.apiKey
-        }
-      });
-
-      for (var d in result.data.collection) {
-        var disease = result.data.collection[d];
-        console.log(disease);
-        Diseases.upsert({
-          '@id': disease['@id']
-        }, disease);
-      }
-
-      for (i = result.data.nextPage; i <= result.data.pageCount; i++) {
-        console.log(i);
-        var result = HTTP.get(Meteor.settings.bioportal.startUrl, {
-          params: {
-            apikey: Meteor.settings.bioportal.apiKey,
-            page: i
-          }
-        });
-        console.log(result);
-        for (var d in result.data.collection) {
-          var disease = result.data.collection[d];
-          console.log(disease);
-          Diseases.upsert({
-            '@id': disease['@id']
-          }, disease);
-        }
-      }
-    },
-
     getOBO: function(){
       HTTP.get('http://purl.obolibrary.org/obo/doid.obo', function(err, response){
         console.log(err);
