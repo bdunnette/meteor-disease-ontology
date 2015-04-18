@@ -35,16 +35,8 @@ if (Meteor.isServer) {
       diseasesToUpdate.forEach(function(disease) {
         var diseaseUpdated = Meteor.call('getDisease', disease.id);
       });
-      return true;
+      return diseasesToUpdate.count();
     }
   });
 
-  Meteor.startup(function () {
-    var diseaseCount = Diseases.find().count();
-    console.log(diseaseCount + ' diseases in database');
-    if (diseaseCount === 0) {
-      var importDiseases = Meteor.call('getDisease', 'DOID:4');
-    }
-    Meteor.call('updateDiseases', function(error, result) {console.log(result)});
-  });
 }
