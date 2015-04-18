@@ -29,13 +29,6 @@ if (Meteor.isServer) {
           'id': term.id
         }, term, function (error, result) {return result;});
       });
-    },
-    updateDiseases: function() {
-      var diseasesToUpdate = Diseases.find({xrefs: {$exists: false}});
-      diseasesToUpdate.forEach(function(disease) {
-        var diseaseUpdated = Meteor.call('getDisease', disease.id);
-      });
-      return diseasesToUpdate.count();
     }
   });
 
