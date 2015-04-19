@@ -32,9 +32,8 @@ var parseStanza = function(stanza, getStanzaType) {
 
 if (Meteor.isServer) {
   Meteor.methods({
-    getOBO: function(oboUrl) {
+    getOBOFile: function(oboUrl) {
       HTTP.get(oboUrl, function(err, response) {
-        console.log(err);
         Diseases.upsert({
           'oboUrl': oboUrl
         }, {
@@ -46,10 +45,14 @@ if (Meteor.isServer) {
       });
     },
 
-    parseStanzas: function(oboUrl) {
+    parseOBOStanzas: function(oboUrl) {
       var oboFile = Diseases.findOne({
         oboUrl: oboUrl
       });
+      if (!oboFile) {
+        console.log(oboFile);
+        return oboFile;
+      }
       var oboContent = oboFile.oboContent;
       var stanzas = oboContent.split("\n\n");
       var ontology = parseStanza(stanzas[0]);
@@ -60,10 +63,10 @@ if (Meteor.isServer) {
         $set: {
           'stanzas': stanzas.slice(1)
         }
-      });
+      }, function(err, result) {return result;});
     },
 
-    parseHeader: function(oboUrl) {
+    parseOBOHeader: function(oboUrl) {
       var oboFile = Diseases.findOne({
         oboUrl: oboUrl
       });
@@ -79,15 +82,20 @@ if (Meteor.isServer) {
       });
     },
 
-    parseTerms: function(oboUrl) {
+    parseOBOTerms: function(oboUrl) {
       var oboFile = Diseases.findOne({
         oboUrl: oboUrl
       });
-      var stanzas = oboFile.stanzas;
-      var terms = stanzas.slice(0, 10);
-
+      var terms = oboFile.stanzas;
+      
       terms.forEach(function(stanza) {
-        console.log(parseStanza(stanza, true));
+        var term = parseStanza(stanza, true);
+        delete term.type;
+        Diseases.upsert({
+          'id': term.id
+        }, {
+          $set: term
+        });
       });
     }
 
