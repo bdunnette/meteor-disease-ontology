@@ -10,9 +10,9 @@ var parseStanza = function(stanza, getStanzaType) {
     var splitString = line.split(":");
     var key = splitString.shift();
     var value = splitString.join(":").replace(/^\s+/, '');
-    if (value.match(/ \! /)){
-  		value=value.split(" ! ")[0];
-  	}
+    if (value.match(/ \! /)) {
+      value = value.split(" ! ")[0];
+    }
     if (stanzaObject.hasOwnProperty(key) && typeof stanzaObject[key] === 'object') {
       stanzaObject[key].push(value);
     }
@@ -27,7 +27,7 @@ var parseStanza = function(stanza, getStanzaType) {
     }
   });
   return stanzaObject;
-}
+};
 
 
 if (Meteor.isServer) {
