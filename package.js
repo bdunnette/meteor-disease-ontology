@@ -13,8 +13,8 @@ Package.onUse(function (api) {
   api.export('Diseases');
 });
 
-Package.onTest(function (api) {
-  api.use('tinytest');
-  api.use('disease-ontology');
-  api.addFiles('disease-ontology-tests.js');
-});
+// Package.onTest(function (api) {
+//   api.use('tinytest');
+//   api.use('disease-ontology');
+//   api.addFiles('disease-ontology-tests.js');
+// });
